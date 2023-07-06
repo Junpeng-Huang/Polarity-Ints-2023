@@ -42,11 +42,9 @@ struct Move
 	int rot;
 };
 
-long long start;
 int counter = 0;
 int bnoCtr = 0;
 unsigned long startTime;
-bool spin;
 bool surge = false;
 
 int compass_correct(float targetHeading = 0)
@@ -90,7 +88,7 @@ float centre_correct(float targetHeading = float(event.orientation.x))
 
 int forwards_correct()
 {
-	float targetDist = (ROBOT == 1? 25 : 30);
+	float targetDist = (ROBOT == 1? 37: 25); //Maybe turn down the P...
 
 	int currentDist = camera.defendDist;
 
@@ -127,60 +125,56 @@ Move attack(double ballDir, double ballStr, bool ballVis, double outDir, double 
 		if (outAvoidance.botlocation == -1){
 			movement.speed = outSpd;
 			movement.dir = outDir;
-			movement.rot = compass_correct();
+			// movement.rot = compass_correct();
 		} else if (outAvoidance.botlocation >= 0 && tssps.ballDir > lineAngle-90 && tssps.ballDir < lineAngle+90 && tssps.ballVisible){
 			if (lineAngle > 160 && lineAngle < 200){
 				movement.speed = outSpd;
 				movement.dir = outDir;
-				movement.rot = compass_correct();
+				// movement.rot = compass_correct();
 			} else if ((tssps.ballDir > 330 || tssps.ballDir < 30) && camera.attackDist < 30) {
 				movement.speed = outSpd;
 				movement.dir = outDir;
-				movement.rot = compass_correct();
-			} else if (camera.attackDist < 30 || camera.defendDist < 30) {
+				// movement.rot = compass_correct();
+			} else {
 				Orbit::OrbitData orbitData = orbit.update(tssps.ballDir, tssps.ballStr);
-				movement.speed = orbitData.speed-EDGESPEED;
+				if (camera.attackDist < 30 || camera.defendDist < 30) {
+					movement.speed = constrain(orbitData.speed, 0, 200);
+				} else {
+					movement.speed = orbitData.speed;
+				}
 				movement.dir = floatMod(tssps.ballDir +tssps.calculateAngleAddition(), 360);
-				movement.rot = camera_correct();
-				if (((tssps.ballDirAvg < 19 && tssps.ballDirAvg > 17.8) || (tssps.ballDirAvg < -1 && tssps.ballDirAvg > -6)) && tssps.ballStrSurgeAvg > KICK_BALL_STR && (camera.attackAngle < 5 || camera.attackAngle > 355)){
+				// movement.rot = camera_correct();
+				if (tssps.ballDirAvg < 1 && tssps.ballDirAvg > -1 && tssps.ballStrSurgeAvg > KICK_BALL_STR && (camera.attackAngle < 2.5 || camera.attackAngle > 357.5)){
 					kicker.shouldKick = true;
 					kicker.kickDelay.resetTime();
 					// Serial.println("Kicking");
 				}
-			} else {
-				Orbit::OrbitData orbitData = orbit.update(tssps.ballDir, tssps.ballStr);
-				movement.speed = orbitData.speed;
-				movement.dir = floatMod(tssps.ballDir +tssps.calculateAngleAddition(), 360);
-				movement.rot = camera_correct();
 			}
 		} else{
 			movement.speed = outSpd;
 			movement.dir = outDir;
-			movement.rot = compass_correct();
+			// movement.rot = compass_correct();
 			// Serial.println(movement.direction);
 		}
 	} else {
 		if (tssps.ballVisible && outAvoidance.botlocation != -1) {
-			if (camera.attackDist < 35){
 				Orbit::OrbitData orbitData = orbit.update(tssps.ballDir, tssps.ballStr);
-				movement.speed = orbitData.speed-EDGESPEED;
+				if (camera.attackDist < 30 || camera.defendDist < 30) {
+					movement.speed = constrain(orbitData.speed, 0, 200);
+				} else {
+					movement.speed = orbitData.speed;
+				}
 				movement.dir = floatMod(tssps.ballDir +tssps.calculateAngleAddition(), 360);
-				movement.rot = camera_correct();
-			} else {
-				Orbit::OrbitData orbitData = orbit.update(tssps.ballDir, tssps.ballStr);
-				movement.speed = orbitData.speed;
-				movement.dir = floatMod(tssps.ballDir +tssps.calculateAngleAddition(), 360);
-				movement.rot = camera_correct();
-				if (((tssps.ballDirAvg < 19 && tssps.ballDirAvg > 17.8) || (tssps.ballDirAvg < -1 && tssps.ballDirAvg > -6)) && tssps.ballStrSurgeAvg > KICK_BALL_STR && (camera.attackAngle < 5 || camera.attackAngle > 355)){
+				// movement.rot = camera_correct();
+				if (tssps.ballDirAvg < 1 && tssps.ballDirAvg > -1 && tssps.ballStrSurgeAvg > KICK_BALL_STR && (camera.attackAngle < 2.5 || camera.attackAngle > 357.5)){
 					kicker.shouldKick = true;
 					kicker.kickDelay.resetTime();
 					// Serial.println("Kicking");
 				}
-			}
 		} else{
 			movement.speed = outSpd;
 			movement.dir = outDir;
-			movement.rot = camera_correct();
+			// movement.rot = camera_correct();
 		}
 	}
 	return movement;
@@ -193,10 +187,10 @@ Move defend(double ballDir, double ballStrAvg, bool ballVis, double outDir, doub
 		bno.getEvent(&event);
 	}
 
-	if (ballStrAvg >= DEFENSE_SURGE_STRENGTH && (tssps.ballDirAvg < 30 && tssps.ballDirAvg > -30) && defendDist < (ROBOT == 1? 28 : 33)){
+	if (ballStrAvg >= DEFENSE_SURGE_STRENGTH && (tssps.ballDirAvg < 30 && tssps.ballDirAvg > -30) && defendDist < (ROBOT == 1? 40 : 28)){
 		surge = true;
 		surgeTimer.resetTime();	
-	} else if (surge && defendDist > 45){
+	} else if (surge && defendDist > 50){
 		surge = false;
 	} else if (surgeTimer.timeHasPassedNoUpdate()){
 		surge = false;
@@ -206,17 +200,12 @@ Move defend(double ballDir, double ballStrAvg, bool ballVis, double outDir, doub
 	int swdc = sideways_correct();
 	int cdc = centre_correct();
 
-	if(defendDist < 45){
+	if(defendDist < 35){ //Calibration 
 		if(outDir == -1 && outAvoidance.botlocation != -1){
 			if(ballVis && defendVis){
 				if (surge){
-					Orbit::OrbitData orbitData = orbit.update(tssps.ballDir, tssps.ballStr);
-					move.speed = orbitData.speed;
-					if (defendDist > 27.5){
-						move.dir = floatMod(tssps.ballDir +tssps.calculateAngleAddition(), 360);
-					} else{
-						move.dir = ballDir;
-					}
+					move.speed = STRIKE_SPEED;
+					move.dir = floatMod(tssps.ballDir +tssps.calculateAngleAddition(), 360);
 					if(camera.attackVis){
 						move.rot = camera_correct();
 						if ((camera.attackAngle < 2.5 || camera.attackAngle > 357.5) && tssps.ballDirAvg < 1 && tssps.ballDirAvg > -1 && tssps.ballStrSurgeAvg > KICK_BALL_STR){
@@ -239,6 +228,7 @@ Move defend(double ballDir, double ballStrAvg, bool ballVis, double outDir, doub
 						move.dir = 90;
 						move.speed = ORBIT_FAR_SPEED;
 						move.rot = defend_correct();
+						Serial.println("Moving Right");
 					} else {
 						move.speed = sqrt(((fwdc)*(fwdc))+((swdc)*(swdc)));
 						move.dir = floatMod(RAD_TO_DEG * atan2(swdc, fwdc), 360);
@@ -258,8 +248,7 @@ Move defend(double ballDir, double ballStrAvg, bool ballVis, double outDir, doub
 				move.rot = defend_correct();
 		}
     } else if (tssps.ballVisible && ballDir > 90 && ballDir < 270){
-        Orbit::OrbitData orbitData = orbit.update(tssps.ballDir, tssps.ballStr);
-        move.speed = orbitData.speed;
+        move.speed = ORBIT_FAR_SPEED;
         move.dir = floatMod(tssps.ballDir +tssps.calculateAngleAddition(), 360);
         move.rot = compass_correct();
 	} else {
@@ -311,25 +300,32 @@ void loop()
 	if (bluetooth.thisData.role == ATTACK_MODE){	// -- Attacking -- 
 		// Serial.println("Attacking");
 		Move att = attack(tssps.ballDir, tssps.ballStr, tssps.ballVisible, outavoidance.direction, outavoidance.speed, lineAngle);
-		motors.move(att.speed, att.dir, att.rot);
+		if (camera.attackVis && lineAngle == -1){
+			motors.move(att.speed, att.dir, camera_correct());
+		} else {
+			motors.move(att.speed, att.dir, compass_correct());
+		}
 
 	} else {	// -- Defending --
 		// Serial.println("Defending");
 		if (camera.defendDist != 0) {
 			Move def = defend(tssps.ballDir, tssps.ballStrAvg, tssps.ballVisible, outavoidance.direction, outavoidance.speed, camera.defendVis, camera.defendDist, lineAngle, orient);
 			motors.move(def.speed, def.dir, def.rot);
-			// Serial.println("Defending");
+			// Serial.println(def.dir);
 		} 
-		else if (tssps.ballVisible && lineAngle != -1 && outAvoidance.botlocation != -1) {
+		else if (tssps.ballVisible && lineAngle == -1 && outAvoidance.botlocation != -1) {
 			Orbit::OrbitData orbitData = orbit.update(tssps.ballDir, tssps.ballStr);
-			motors.move(orbitData.speed, constrain(floatMod(tssps.ballDir +tssps.calculateAngleAddition(), 360), 90, 270), camera_correct());
+			motors.move(orbitData.speed-100, constrain(floatMod(tssps.ballDir +tssps.calculateAngleAddition(), 360), 90, 270), camera_correct());
 			// Serial.println("Orbiting");
 		} else {
 			motors.move(outavoidance.speed, outavoidance.direction,compass_correct());
 		}
 	}
 
-	kicker.update();
+	// Move att = attack(tssps.ballDir, tssps.ballStr, tssps.ballVisible, outavoidance.direction, outavoidance.speed, lineAngle);
+	// motors.move(att.speed, att.dir, compass_correct());
+
+	kicker.update(); //Reset point orbit test & change surge on opp corner case
 
 
 	//- Testing -//
@@ -340,20 +336,21 @@ void loop()
 	// if (tssps.ballStrSurgeAvg > 180){
 	// 	Serial.println(tssps.ballStrSurgeAvg);
 	// }
-	// if (tssps.ballStrAvg > 165){
+	// if (tssps.ballStrAvg > 160){
 	// 	Serial.println(tssps.ballStrAvg);
 	// }
 	// Serial.print(camera.defendAngle-orient);
 	// Serial.print("  ");
 	// Serial.println(tssps.ballDir);
 	// Serial.println(camera.attackAngle);
+	// Serial.println(camera.defendDist);
+	// Serial.println(camera.defendDist); //, tssps.ballStrAvg, tssps.ballVisible, outavoidance.direction, outavoidance.speed, camera.defendVis, camera.defendDist, lineAngle, orient
 
-	// lightsensor.test();
+	lightsensor.test();
 	// Serial.println(outAvoidance.botlocation);
 	// Serial.println(lineAngle);
 	// motors.move(outavoidance.speed, outavoidance.direction,compass_correct());
 
-	
 	//- Kicker -//
 
 	// digitalWrite(KICKER_PIN,HIGH);

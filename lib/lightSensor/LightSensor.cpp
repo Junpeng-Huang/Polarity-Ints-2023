@@ -66,54 +66,11 @@ void LightSensor::test()
 {
     readAll();
     
-    // for (int j = 0; j < LS_NUM; j++)
-    // {
-    //     if (ROBOT == 1 ? (j == 2 || j == 9 || j == 13 || j == 15 || j == 21) : (j == 4 || j == 15 || j == 21))
-    //     {
-    //         if (read[j] >= ls_cal[j] - 300)
-    //         {
-    //             white[j] = 1;
-    //             // Serial.println(read[j]);
-    //         }
-    //         else
-    //         {
-    //             white[j] = 0;
-    //         }
-    //     } else 
-    //     if (read[j] >= ls_cal[j])
-    //     {
-    //         white[j] = 1;
-    //     }
-    //     else
-    //     {
-    //         white[j] = 0;
-    //     }
-    //     Serial.print(white[j]);
-    //     Serial.print(" ");
-    // }
-    // Serial.println(" ");
-
-    // Serial.println(ls_cal[2]);
-
-    for(int i=0; i<32; i++){
-        Serial.print(read[i]);
-        Serial.print(" ");
-    }
-    Serial.println(" ");
-    delay(200);
-}
-
-double LightSensor::update()
-{
-    readAll();
-    clusterNum = -1;
-    LightSensor::Cluster clusterArray[4];
-
-     for (int j = 0; j < LS_NUM; j++)
+    for (int j = 0; j < LS_NUM; j++)
     {
-        if (ROBOT == 1 ? (j == 2 || j == 9 || j == 13 || j == 15 || j == 21) : (j == 4 || j == 15 || j == 21))
+        if (ROBOT == 1 && (j == 9 || j == 12 || j == 15 || j == 18 || j == 29))
         {
-            if (read[j] >= ls_cal[j] - 300)
+            if (read[j] >= ls_cal[j] - 350)
             {
                 white[j] = 1;
                 // Serial.println(read[j]);
@@ -122,13 +79,74 @@ double LightSensor::update()
             {
                 white[j] = 0;
             }
-        } else 
-        if (read[j] >= ls_cal[j])
-        {
+        } else if (ROBOT == 1 ? (j == 2 || j == 7 || j == 8 || j == 13) : (j == 4 || j == 6 || j == 7 || j == 21 || j == 23 || j == 24)) {
+            if (read[j] >= ls_cal[j] - 400)
+            {
+                white[j] = 1;
+                // Serial.println(read[j]);
+            }
+            else
+            {
+                white[j] = 0;
+            }
+        } else if (ROBOT == 1 && j == 17) {
+            if (white[j-1] == 1 && white[j+1] == 1) {
+                white[j] = 1;
+            } else {
+                white[j] = 0;
+            }
+        } else if (read[j] >= ls_cal[j]) {
             white[j] = 1;
+        } else {
+            white[j] = 0;
         }
-        else
+        Serial.print(white[j]);
+        Serial.print(" ");
+    }
+    Serial.println(" ");
+
+    // Serial.println(read[17]);
+
+    // for(int i=0; i<32; i++){
+    //     Serial.print(read[i]);
+    //     Serial.print(" ");
+    // }
+    // Serial.println(" ");
+    // delay(200);
+}
+
+double LightSensor::update()
+{
+    readAll();
+    clusterNum = -1;
+    LightSensor::Cluster clusterArray[4];
+
+    for (int j = 0; j < LS_NUM; j++)
         {
+        if (ROBOT == 1 && (j == 9 || j == 12 || j == 15 || j == 17 || j == 18))
+        {
+            if (read[j] >= ls_cal[j] - 350)
+            {
+                white[j] = 1;
+                // Serial.println(read[j]);
+            }
+            else
+            {
+                white[j] = 0;
+            }
+        } else if (ROBOT == 1 ? (j == 2 || j == 7 || j == 8 || j == 13) : (j == 4 || j == 6 || j == 7 || j == 21 || j == 23 || j == 24)) {
+            if (read[j] >= ls_cal[j] - 400)
+            {
+                white[j] = 1;
+                // Serial.println(read[j]);
+            }
+            else
+            {
+                white[j] = 0;
+            }
+        } else if (read[j] >= ls_cal[j]) {
+            white[j] = 1;
+        } else {
             white[j] = 0;
         }
     }

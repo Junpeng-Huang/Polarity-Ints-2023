@@ -49,6 +49,8 @@ void Bluetooth::receive(){
                 if(otherData.role == thisData.role){
                     isSwitching = true;
                 }
+            } else if(otherData.role == thisData.role){
+                isSwitching = true;
             }
             // Serial.print(otherData.ballStrSurge);
             // Serial.print("  ");
@@ -67,7 +69,9 @@ void Bluetooth::decideRole() {
     if(thisData.role == DEFENSE_MODE){
         if(thisData.ballStrSurge > DEFENSE_SURGE_STRENGTH){
             thisData.role = ATTACK_MODE;
-        } 
+        // } else if(thisData.ballStrSurge-otherData.ballStrSurge >= 100) {
+        //     thisData.role = ATTACK_MODE;
+        }
         if ((thisData.role == otherData.role)){
             if(thisData.ballStrSurge > otherData.ballStrSurge){
                 // Serial.print("Checking this");

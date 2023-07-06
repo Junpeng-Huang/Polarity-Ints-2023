@@ -8,12 +8,11 @@
 #define DEG2RAD (3.141592/180)
 #define RAD2DEG (180/3.141592)
 
-#define ROBOT 2
-
-#define ORBIT_FAR_SPEED (ROBOT == 1 ? 240 : 240)
-#define ORBIT_CLOSE_SPEED (ROBOT == 1 ? 200 : 200)
-#define ORBIT_STRIKE_ANGLE (ROBOT == 1 ? 5 : 5)
-#define STRIKE_SPEED (ROBOT == 1 ? 255 : 255)
+#define ROBOT 1
+#define ORBIT_FAR_SPEED (ROBOT == 1 ? 110 : 160)
+#define ORBIT_CLOSE_SPEED (ROBOT == 1 ? 110 : 140)
+#define ORBIT_STRIKE_ANGLE (ROBOT == 1 ? 7.5 : 10)
+#define STRIKE_SPEED (ROBOT == 1 ? 150 : 210)
 
 #define COMPASS_P (ROBOT == 1 ? 2 : 2) 
 #define COMPASS_I (ROBOT == 1 ? 0 : 0)
@@ -25,21 +24,37 @@
 
 //defending
 
+// #define centre_P (ROBOT == 1 ? 3 : 3) //2
+// #define centre_I (ROBOT == 1 ? 0 : 0)
+// #define centre_D (ROBOT == 1 ? 0.02 : 0.02) //0.05
+
+// #define SIDEWAY_P (ROBOT == 1 ? 3 : 3) //4
+// #define SIDEWAY_I (ROBOT == 1 ? 0 : 0)
+// #define SIDEWAY_D (ROBOT == 1 ? 0.001 : 0.001) //0.05
+
+// #define defend_P (ROBOT == 1 ? 1.6 : 1.6) //2
+// #define defend_I (ROBOT == 1 ? 0 : 0)
+// #define defend_D (ROBOT == 1 ? 0.07 : 0.07) //0.09
+
+// #define forward_P (ROBOT == 1 ? 15 : 15) //20
+// #define forward_I (ROBOT == 1 ? 0 : 0)
+// #define forward_D (ROBOT == 1 ? 0 : 0.01) //0.05
+
 #define centre_P (ROBOT == 1 ? 3 : 3) //2
 #define centre_I (ROBOT == 1 ? 0 : 0)
 #define centre_D (ROBOT == 1 ? 0.02 : 0.02) //0.05
 
-#define SIDEWAY_P (ROBOT == 1 ? 2.75 : 3.3) //4
+#define SIDEWAY_P (ROBOT == 1 ? 2 : 2.5) //4
 #define SIDEWAY_I (ROBOT == 1 ? 0 : 0)
-#define SIDEWAY_D (ROBOT == 1 ? 0.01 : 0.01) //0.05
+#define SIDEWAY_D (ROBOT == 1 ? 0.001 : 0.001) //0.05
 
-#define defend_P (ROBOT == 1 ? 1.5 : 1.5) //2
+#define defend_P (ROBOT == 1 ? 1.6 : 1.6) //2
 #define defend_I (ROBOT == 1 ? 0 : 0)
-#define defend_D (ROBOT == 1 ? 0.07 : 0.1) //0.09
+#define defend_D (ROBOT == 1 ? 0.07 : 0.07) //0.09
 
-#define forward_P (ROBOT == 1 ? 20 : 15) //20
+#define forward_P (ROBOT == 1 ? 15 : 15) //20
 #define forward_I (ROBOT == 1 ? 0 : 0)
-#define forward_D (ROBOT == 1 ? 0 : 0) //0.05
+#define forward_D (ROBOT == 1 ? 0 : 0.01) //0.05
 
 #define TSSP_X_0 0.70711
 #define TSSP_X_1 0.92388
@@ -79,8 +94,8 @@
 #define TSSP_READ_NUM 256
 #define TSSP_SAMPLE 25
 #define BALL_CLOSE_STRENGTH (ROBOT == 1 ? 140 : 140)
-#define ATT_MULT (ROBOT == 1? 0.0075: 0.08)
-#define DEF_MULT (ROBOT == 1? 0.1: 0.12)
+#define ATT_MULT (ROBOT == 1? 0.00075: 0.08)
+#define DEF_MULT (ROBOT == 1? 0.1: 0.3)
 
 #define ARRAYSHIFTDOWN(a, lower, upper){          \
 	if (upper == (sizeof(a)/sizeof(a[0])) - 1){   \
@@ -110,9 +125,9 @@ bool angleIsInside(float angleBoundCounterClockwise, float angleBoundClockwise, 
 
 #define LS_NUM 32
 #define LS_NUM_IND 16
-#define LINE_BUFFER (ROBOT == 1 ? 700 : 650)
-#define LS_AVOID_MEDIUM (ROBOT == 1 ? 160  : 210 )
-#define LS_AVOID_FAST (ROBOT == 1 ? 200  : 255)
+#define LINE_BUFFER (ROBOT == 1 ? 800 : 800)
+#define LS_AVOID_MEDIUM (ROBOT == 1 ? 210  : 210 )
+#define LS_AVOID_FAST (ROBOT == 1 ? 255  : 255)
 #define LS_CALIBRATE_COUNT 10
 #define LS_OFFSET 180
 
@@ -187,10 +202,10 @@ bool angleIsInside(float angleBoundCounterClockwise, float angleBoundClockwise, 
 #define blueAttack 1
 
 #define DEFENSE_SUGRE_SPEED 255
-#define DEFENSE_SURGE_STRENGTH 155
+#define DEFENSE_SURGE_STRENGTH 160
 #define SURGE_MAX_TIME 500000
 
-#define KICK_BALL_STR 175
+#define KICK_BALL_STR 170
 #define KICK_DELAY_TIME 250000
 #define KICK_DISCHARGE_TIME 50000 
 #define KICK_CHARGE_TIME 15000000

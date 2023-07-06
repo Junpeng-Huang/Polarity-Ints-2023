@@ -90,9 +90,9 @@ void TSSPs::rollingaverage()
 float TSSPs::calculateAngleAddition()
 {
 	float dir = ballDir > 180 ? ballDir - 360 : ballDir;
-	float ballAngleDifference = findSign(dir) * fmin(90, 0.1 * expf(0.35 * smallestAngleBetween(ballDir, 0)));
+	float ballAngleDifference = findSign(dir) * fmin(90, 0.15 * expf(0.35 * smallestAngleBetween(ballDir, 0)));
 	float strengthFactor = constrain(ballStr / BALL_CLOSE_STRENGTH, 0, 1);
-	float distanceMultiplier = ATTACK_MODE? constrain((ATT_MULT * expf(4.5 * strengthFactor)), 0, 1) : constrain((DEF_MULT * expf(4.5 * strengthFactor)), 0, 1);
+	float distanceMultiplier = constrain((0.01 * expf(4.5 * strengthFactor)), 0, 1);
 	angleAddition = ballAngleDifference * distanceMultiplier;
 	return angleAddition;
 }
